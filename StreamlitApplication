@@ -1,0 +1,56 @@
+import streamlit as st
+import pandas as pd
+import mysql.connector
+
+connection = mysql.connector.connect(
+    host = 'localhost',
+    user = 'root',
+    password = 'Bala@123',
+    database = 'redbus',
+    autocommit=True
+)
+cursor = connection.cursor()
+st.title('Redbus_Form')
+form=st.form(key='Redbus_Form')
+Route_name=form.text_input('Routename')
+Route_link=form.text_input('Routelink')
+busname=form.text_input('busname')
+Bustype=form.text_input('Bustype')
+Departing_time=form.text_input('Departingtime')
+Duration=form.text_input('Duration')
+Reaching_time=form.text_input('Reachingtime')
+Star_rating=form.text_input('Star_rating')
+price=form.text_input('price')
+seats_available=form.text_input('seats_available')
+submit_button=form.form_submit_button(label='Register')
+if submit_button:
+    form_data={
+        'Route_name': Route_name,
+        'Route_link': Route_link,
+        'busname': busname,
+        'Bustype': Bustype,
+        'Departing_time': Departing_time,
+        'Duration': Duration,
+        'Reaching_time': Reaching_time,
+        ' Star_rating' : Star_rating,
+        'price' : price,
+        'seats_available': seats_available
+
+    }
+    df=pd.DataFrame([form_data])
+    st.success('Registration successful')
+    st.write('here are the details')
+    st.table(df)
+    query = """
+    INSERT INTO Bus_routes (Route_name,Route_link,busname,Bustype,Departing_time,Duration,Reaching_time,Star_rating,price,seats_available) 
+    VALUES (%s, %s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """
+    data=( Route_name,Route_link,busname,Bustype,Departing_time,Duration,Reaching_time,Star_rating,price,seats_available )
+    cursor.execute(query,data)
+    st.success('data into sql')
+    sql='select * from Bus_routes'
+    cursor.execute(sql)
+    data=cursor.fetchall()
+    st.table(data)
+ 
+    
